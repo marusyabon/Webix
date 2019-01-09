@@ -29,7 +29,9 @@ body {
 }
 
 .profile_btn.webix_el_button button:hover,
-.profile_btn.webix_el_button button:focus {
+.profile_btn.webix_el_button button:focus,
+.success.webix_el_button button:hover,
+.success.webix_el_button button:focus {
   background-color: transparent;
 }
 
@@ -37,3 +39,11 @@ body {
   background-color: #e6e6e6;
 }
 
+.success.webix_el_button button {
+  color: green;
+}
+
+.success.webix_el_button button .webix_icon_btn  {
+  color: green;
+  /* font-size: 18px; */
+}

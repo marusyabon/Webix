@@ -11,6 +11,7 @@
     <link href="http://cdn.webix.com/codebase/skins/webix.css" rel="stylesheet" type="text/css">
     <script src="testdata.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="flat.css">
     <link rel="stylesheet" type="text/css" href="style.css">
 
     </head>
@@ -56,7 +57,7 @@
                   type:"icon", 
                   icon:"fas fa-check",
                   label: "Connected",
-                  css: ""
+                  css: "success"
                 }]
               },{ 
                   view:"resizer" 
@@ -76,7 +77,7 @@
                       { view:"text", label:"Votes" },
                       {cols:[
                           { view:"button", value:"Login", type:"form" },
-                          { view:"button", value:"Cancel", type:"standart" }
+                          { view:"button", value:"Cancel" }
                       ]}
                   ]
                 }, {}]
