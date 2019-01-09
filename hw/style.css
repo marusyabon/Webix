@@ -1,0 +1,39 @@
+body {
+  font-family: Arial;
+  color: #000;
+}
+
+.text_center {
+  text-align: center;
+}
+
+.webix_view {
+  background-color: transparent;
+}
+
+.page_title {
+  font-size: 34.666666666666664px;
+}
+
+.app_header {
+  background-color: #3498db;
+}
+
+.app_header.webix_layout_toolbar.webix_toolbar .webix_el_label {
+  color: #fff;
+}
+
+.profile_btn.webix_el_button button,
+.profile_btn.webix_el_button .webix_icon_btn  {
+  color: #fff;
+}
+
+.profile_btn.webix_el_button button:hover,
+.profile_btn.webix_el_button button:focus {
+  background-color: transparent;
+}
+
+.sidebar {
+  background-color: #e6e6e6;
+}
+
