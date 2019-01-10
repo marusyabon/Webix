@@ -48,10 +48,11 @@
           cols: [
             {
               css: "sidebar",
+              width: 250,
+              minWidth: 150,
               rows: [
                 {
                   view: "list",
-                  width: 250,
                   autoheight: true,
                   template: "#title#",
                   select: true,
@@ -83,7 +84,7 @@
             },
             {
               type: "clean",
-              width: 300,
+              width: 320,
               rows: [
                 {
                   view: "form",
@@ -107,6 +108,8 @@
                               webix.message('Film added', 'success');
 
                               var data = $$("myform").getValues();
+                              // var regex = /(<([^>]+)>)/ig;
+                              // var cleanData = data.replace(regex, "");
                               $$("filmsList").add(data)
                             }
                           }
@@ -132,7 +135,7 @@
                       return value > 0;
                     },
                     votes: function (value) {
-                      return (value >= 0 && value <= 100000);
+                      return (value > 0 && value <= 100000);
                     },
                   }
                 },
