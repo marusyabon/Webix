@@ -1,114 +1,194 @@
-<!DOCTYPE HTML> 
+<!DOCTYPE HTML>
 <html lang="en">
-  <head>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
 
-    <title>Webix</title>
-    <script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
-    <link href="http://cdn.webix.com/codebase/skins/webix.css" rel="stylesheet" type="text/css">
-    <script src="testdata.js" type="text/javascript" charset="utf-8"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="flat.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    </head>
+  <title>Webix</title>
+  <script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.webix.com/edge/webix.css">
+  <link href="http://cdn.webix.com/codebase/skins/webix.css" rel="stylesheet" type="text/css">
+  <script src="testdata.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="style.css">
 
-    <body>
-        <script type="text/javascript" charset="utf-8">
+</head>
 
-          var myapp = {
-            rows:[{
-              view:"toolbar",
-              css: "app_header",
-              elements: [{
-                view: "label",
-                label: "My App",
-                paddingX: 10
-              }, {},
-              {
-                view: "button",
-                type:"icon", 
-                icon:"fas fa-user",
-                label: "Profile",
-                width: 110,
-                css: "profile_btn"
-              }]
-            },
+<body>
+  <script type="text/javascript" charset="utf-8">
+
+    var myapp = {
+      rows: [
+        {
+          css: "webix_dark",
+          view: "toolbar",
+          elements: [
             {
-              cols: [{
-                css: "sidebar",
-                rows: [{
-                  view:"list",
-                  width:250,
+              view: "label",
+              label: "My App",
+              paddingX: 10
+            },
+            {},
+            {
+              view: "button",
+              type: "icon",
+              icon: "fas fa-user",
+              label: "Profile",
+              id: "profileBtn",
+              width: 110,
+              css: "profile_btn",
+              popup: "profileWin"
+            }
+          ]
+        },
+        {
+          cols: [
+            {
+              css: "sidebar",
+              rows: [
+                {
+                  view: "list",
+                  width: 250,
                   autoheight: true,
-                  template:"#title#",
-                  select:true,
-                  data:[
-                    { id:1, title:"Dashboard"},
-                    { id:2, title:"Users"},
-                    { id:3, title:"Products"},
-                    { id:4, title:"Locations"}
-                ]},{},
+                  template: "#title#",
+                  select: true,
+                  data: [
+                    { id: 1, title: "Dashboard" },
+                    { id: 2, title: "Users" },
+                    { id: 3, title: "Products" },
+                    { id: 4, title: "Locations" }
+                  ]
+                },
+                {},
                 {
                   view: "button",
-                  type:"icon", 
-                  icon:"fas fa-check",
+                  type: "icon",
+                  icon: "fas fa-check",
                   label: "Connected",
                   css: "success"
-                }]
-              },{ 
-                  view:"resizer" 
-              }, {
-                view: "datatable",
-                autoConfig: true,
-                data:small_film_set
-              }, {
-                type: "clean",
-                width: 300,
-                rows: [{
-                  view: "form",
-                  elements:[
-                      { view:"text", label:"Title" },
-                      { view:"text", label:"Year" },
-                      { view:"text", label:"Rating" },
-                      { view:"text", label:"Votes" },
-                      {cols:[
-                          { view:"button", value:"Login", type:"form" },
-                          { view:"button", value:"Cancel" }
-                      ]}
-                  ]
-                }, {}]
-              }
-
+                }
               ]
-            }]
-          }
-    
-          webix.ui({
-            rows: [{
-                height: 20
-              },{
-                template: "My First App",
-                css: "page_title text_center",
-                type: "clean",
-                autoheight: true
-              },{
-                height: 20
-              },
-              myapp,
-              {
-                template: "The software is provided by <a href='http://webix.com' target='_blank'>http://webix.com'</a>. All rights reserved (c).",
-                css: "text_center",
-                autoheight: true
-              }
-            ]
-          });
-        
-        </script>
-      
-    </body>
+            },
+            {
+              view: "resizer"
+            },
+            {
+              view: "datatable",
+              id: "filmsList",
+              autoConfig: true,
+              data: small_film_set
+            },
+            {
+              type: "clean",
+              width: 300,
+              rows: [
+                {
+                  view: "form",
+                  id: "myform",
+                  elements: [
+                    {
+                      view: "template",
+                      type: "section",
+                      template: "EDIT FILMS"
+                    },
+                    { view: "text", label: "Title", name: "title", invalidMessage: "Cannot be empty" },
+                    { view: "text", label: "Year", name: "year", invalidMessage: "Should be between 1970 and 2019" },
+                    { view: "text", label: "Rating", name: "rating", invalidMessage: "Should be more then 0" },
+                    { view: "text", label: "Votes", name: "votes", invalidMessage: "Must be less than 100000" },
+                    {
+                      cols: [
+                        {
+                          view: "button", value: "Add", type: "form", click: function () {
+                            var result = $$("myform").validate();
+                            if (result) {
+                              webix.message('Film added', 'success');
 
-  </html>
+                              var data = $$("myform").getValues();
+                              $$("filmsList").add(data)
+                            }
+                          }
+                        },
+                        {
+                          view: "button", value: "Clear", click: function () {
+                            var confirm = webix.confirm("Are you shure?");
+                            if(confirm) {  
+                              $$("myform").clearValidation();
+                              $$("myform").clear();
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  rules: {
+                    title: webix.rules.isNotEmpty,
+                    year: function (value) {
+                      return (value >=1970 && value <= 2019);
+                    },
+                    rating: function (value) {
+                      return value > 0;
+                    },
+                    votes: function (value) {
+                      return (value >= 0 && value <= 100000);
+                    },
+                  }
+                },
+                {}
+              ]
+            }
+
+          ]
+        }
+      ]
+    }
+
+    var profileWin = webix.ui({
+        view: "popup",
+        id: "profileWin",
+        height: 250,
+        width: 300,
+        css: "profile_win",
+        body: {
+          view: "list",
+          width: 250,
+          autoheight: true,
+          select: true,
+          data: ["Settings", "Log out"]
+        }
+      })
+
+    webix.ui({
+      rows: [
+        {
+          height: 20
+        },
+        {
+          template: "My First App",
+          css: "page_title text_center",
+          type: "clean",
+          autoheight: true
+        },
+        {
+          height: 20
+        },
+        myapp,
+        {
+          template: "The software is provided by <a href='http://webix.com' target='_blank'>http://webix.com'</a>. All rights reserved (c).",
+          css: "text_center",
+          autoheight: true
+        }
+      ]
+    });
+
+    // $$("profileBtn").attachEvent("onItemClick", function () {
+    //   profileWin.show(this, {pos:"bottom"});
+    // });
+
+  </script>
+
+</body>
+
+</html>
