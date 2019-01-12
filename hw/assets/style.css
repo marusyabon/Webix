@@ -7,6 +7,10 @@ body {
   text-align: center;
 }
 
+.bg_gray {
+  background-color: #f4f5f9;
+}
+
 .webix_view {
   background-color: transparent;
 }
@@ -28,7 +32,7 @@ body {
 }
 
 .sidebar {
-  background-color: #e6e6e6;
+  background-color: #f4f5f9;
 }
 
 .success.webix_el_button button {
@@ -44,7 +48,9 @@ body {
   background-color: #fff;
 }
 
-.col_btn.webix_column .webix_cell {
-  display: flex!important;
+.d_flex.webix_column .webix_cell,
+.d_flex .webix_list_item {
+  display: flex;
   justify-content: space-between;
+  align-items: center;
 }

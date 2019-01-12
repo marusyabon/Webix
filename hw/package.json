@@ -1,0 +1,23 @@
+{
+  "name": "WEBIX",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marusyabon/Webix.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marusyabon/Webix/issues"
+  },
+  "homepage": "https://github.com/marusyabon/Webix#readme",
+  "devDependencies": {
+    "lite-server": "^2.4.0"
+  }
+}

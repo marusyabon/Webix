@@ -7,18 +7,244 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Webix</title>
+  <!-- webix -->
   <script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.webix.com/edge/webix.css">
-  <link href="http://cdn.webix.com/codebase/skins/webix.css" rel="stylesheet" type="text/css">
-  <script src="testdata.js" type="text/javascript" charset="utf-8"></script>
+
+  <!--  -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
     crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="assets/style.css">
 
 </head>
 
 <body>
   <script type="text/javascript" charset="utf-8">
+
+    var form = {
+      type: "clean",
+      width: 320,
+      rows: [
+        {
+          view: "form",
+          id: "myform",
+          elements: [
+            {
+              view: "template",
+              type: "section",
+              template: "EDIT FILMS"
+            },
+            { view: "text", label: "Title", name: "title", invalidMessage: "Cannot be empty" },
+            { view: "text", label: "Year", name: "year", invalidMessage: "Should be between 1970 and 2019" },
+            { view: "text", label: "Rating", name: "rating", invalidMessage: "Should be more then 0" },
+            { view: "text", label: "Votes", name: "votes", invalidMessage: "Must be less than 100000" },
+            {
+              cols: [
+                {
+                  view: "button", value: "Add", type: "form", click: function () {
+                    var result = $$("myform").validate();
+                    if (result) {
+                      webix.message('Film added', 'success');
+
+                      var data = $$("myform").getValues();
+                      var regex = /(<([^>]+)>)/ig;
+
+                      for (var prop in data) {
+                        prop.replace(regex, "")
+                      };
+
+                      $$("filmsList").add(data)
+                    }
+                  }
+                },
+                { view: "button", value: "Update", click: "update_row" },
+                {
+                  view: "button", value: "Clear", click: function () {
+                    var confirm = webix.confirm("Are you shure?");
+                    if (confirm) {
+                      $$("myform").clearValidation();
+                      $$("myform").clear();
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          rules: {
+            title: webix.rules.isNotEmpty,
+            year: function (value) {
+              return (value >= 1970 && value <= 2019);
+            },
+            rating: function (value) {
+              return value > 0;
+            },
+            votes: function (value) {
+              return (value > 0 && value <= 100000);
+            },
+          }
+        },
+        {}
+      ]
+    }
+
+    var filmsTable = {
+      view: "datatable",
+      id: "filmsList",
+      url: "data/data.js",
+      select: true,
+      hover: "bg_gray",
+      columns: [
+        {
+          id: "rank",
+          sort: "int",
+          header: "",
+          width: 50,
+          css: "bg_gray"
+        },
+        {
+          id: "title",
+          sort: "text",
+          header: ["Film title", { content: "textFilter" }],
+          fillspace: true
+        },
+        {
+          id: "year",
+          sort: "int",
+          header: ["Year", { content: "textFilter" }]
+        },
+        {
+          id: "rating",
+          sort: "int",
+          header: ["Rating", { content: "textFilter" }]
+        },
+        {
+          id: "votes",
+          sort: "int",
+          header: ["Votes", { content: "textFilter" }],
+          css: "d_flex",
+          template: "<span>#votes#</span>  <span class='removeBtn'>{common.trashIcon()}</span>",
+        }
+      ],
+      onClick: {
+        removeBtn: function (e, id) {
+          this.remove(id);
+          return false;
+        }
+      }
+
+    };
+
+    var usersTable = {
+      rows: [
+        {
+          cols: [
+            {
+              view: "text",
+              name: "usersFilter",
+              id: "usersFilter",
+              on: {
+                'onKeyPress': function () {
+                  var val = this.getValue();
+                  $$('usersList').filter("#name#", val);
+                }
+              }
+            },
+            {
+              view: "button",
+              id: "sortAsc",
+              value: "Sort asc",
+              type: "form",
+              width: 100,
+              click: function(){
+                $$('usersList').sort("#name#","asc");
+              }
+            },
+            {
+              view: "button",
+              id: "sortDesc",
+              value: "Sort desc",
+              type: "form",
+              width: 100,
+              click: function(){
+                $$('usersList').sort("#name#","desc");
+              }
+            }
+          ]
+
+        },
+        {
+          view: "list",
+          id: "usersList",
+          css: "d_flex",
+          select: true,
+          template: "#name# <span class='removeBtn'><i class='fas fa-times'></i></span>",
+          url: "data/users.js",
+          onClick: {
+            removeBtn: function (e, id) {
+              this.remove(id);
+              return false;
+            }
+          },
+          on: {
+            "onAfterRender": function(){
+              console.log($$("usersList").data)
+              for(var i=0; i<6; i++) {
+                this.addCss(i, "bg_gray")
+              }
+            }
+          }
+        }
+      ]
+    }
+
+    var usersChart = {
+      view:"chart",
+      type:"bar",
+      value: "#age#",
+      url: "data/users.js",
+      xAxis: {
+        template: "#age#"
+      }
+    }
+
+    var products = {
+      view: "treetable",
+      url: "data/products.js",
+      select: "row",
+      columns: [
+        {
+          id: "id",
+          header: "",
+          width: 50
+        },
+        {
+          id: "title",
+          header: "Title",
+          template: "{common.treetable()} #title#",
+          fillspace: 2
+        },
+        {
+          id: "price",
+          header: "Price",
+          fillspace: 1
+        }
+      ],
+      on: {
+        onAfterLoad: function() {
+          this.openAll()
+        }
+      }
+    }
+    
+    var main = {
+      animate: false,
+      cells: [
+        { id: "Dashboard", cols: [filmsTable, form] },
+        { id: "Users", rows: [usersTable, usersChart] },
+        { id: "Products", rows: [products] },
+        { id: "Locations", template: "Locations view" }
+      ]
+    };
 
     var myapp = {
       rows: [
@@ -54,14 +280,13 @@
                 {
                   view: "list",
                   autoheight: true,
-                  template: "#title#",
                   select: true,
-                  data: [
-                    { id: 1, title: "Dashboard" },
-                    { id: 2, title: "Users" },
-                    { id: 3, title: "Products" },
-                    { id: 4, title: "Locations" }
-                  ]
+                  on: {
+                    onAfterSelect: function (id) {
+                      $$(id).show();
+                    }
+                  },
+                  data: ["Dashboard", "Users", "Products", "Locations"]
                 },
                 {},
                 {
@@ -76,92 +301,26 @@
             {
               view: "resizer"
             },
-            {
-              view: "datatable",
-              id: "filmsList",
-              autoConfig: true,
-              data: small_film_set
-            },
-            {
-              type: "clean",
-              width: 320,
-              rows: [
-                {
-                  view: "form",
-                  id: "myform",
-                  elements: [
-                    {
-                      view: "template",
-                      type: "section",
-                      template: "EDIT FILMS"
-                    },
-                    { view: "text", label: "Title", name: "title", invalidMessage: "Cannot be empty" },
-                    { view: "text", label: "Year", name: "year", invalidMessage: "Should be between 1970 and 2019" },
-                    { view: "text", label: "Rating", name: "rating", invalidMessage: "Should be more then 0" },
-                    { view: "text", label: "Votes", name: "votes", invalidMessage: "Must be less than 100000" },
-                    {
-                      cols: [
-                        {
-                          view: "button", value: "Add", type: "form", click: function () {
-                            var result = $$("myform").validate();
-                            if (result) {
-                              webix.message('Film added', 'success');
-
-                              var data = $$("myform").getValues();
-                              // var regex = /(<([^>]+)>)/ig;
-                              // var cleanData = data.replace(regex, "");
-                              $$("filmsList").add(data)
-                            }
-                          }
-                        },
-                        {
-                          view: "button", value: "Clear", click: function () {
-                            var confirm = webix.confirm("Are you shure?");
-                            if(confirm) {  
-                              $$("myform").clearValidation();
-                              $$("myform").clear();
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  ],
-                  rules: {
-                    title: webix.rules.isNotEmpty,
-                    year: function (value) {
-                      return (value >=1970 && value <= 2019);
-                    },
-                    rating: function (value) {
-                      return value > 0;
-                    },
-                    votes: function (value) {
-                      return (value > 0 && value <= 100000);
-                    },
-                  }
-                },
-                {}
-              ]
-            }
-
+            main
           ]
         }
       ]
-    }
+    };
 
     var profileWin = webix.ui({
-        view: "popup",
-        id: "profileWin",
-        height: 250,
-        width: 300,
-        css: "profile_win",
-        body: {
-          view: "list",
-          width: 250,
-          autoheight: true,
-          select: true,
-          data: ["Settings", "Log out"]
-        }
-      })
+      view: "popup",
+      id: "profileWin",
+      height: 250,
+      width: 300,
+      css: "profile_win",
+      body: {
+        view: "list",
+        width: 250,
+        autoheight: true,
+        select: true,
+        data: ["Settings", "Log out"]
+      }
+    })
 
     webix.ui({
       rows: [
@@ -185,6 +344,47 @@
         }
       ]
     });
+
+    $$("filmsList").attachEvent("onAfterSelect", function (id) {
+      $$("myform").setValues({
+        title: $$("filmsList").getItem(id).title,
+        year: $$("filmsList").getItem(id).year,
+        rating: $$("filmsList").getItem(id).rating,
+        votes: $$("filmsList").getItem(id).votes
+      });
+    });
+
+    function update_row() {
+      var sel = $$("filmsList").getSelectedId();
+      if (!sel) return;
+
+      var value1 = $$('myform').getValues().title;
+      var value2 = $$('myform').getValues().year;
+      var value3 = $$('myform').getValues().rating;
+      var value4 = $$('myform').getValues().votes;
+
+
+      var item = $$("filmsList").getItem(sel);
+      item.title = value1;
+      item.year = value2;
+      item.rating = value3;
+      item.votes = value4;
+
+      var result = $$("myform").validate();
+      if (result) {
+        webix.message('Infomation updated', 'success');
+
+        var data = $$("myform").getValues();
+        var regex = /(<([^>]+)>)/ig;
+
+        for (var prop in data) {
+          prop.replace(regex, "")
+        };
+
+        $$("filmsList").updateItem(sel, item);
+      }
+
+    }
 
   </script>
 
