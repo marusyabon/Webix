@@ -21,6 +21,11 @@
 <body>
   <script type="text/javascript" charset="utf-8">
 
+    webix.protoUI({
+				name:"editlist"
+			}, webix.EditAbility, webix.ui.list);
+
+
     var form = {
       type: "clean",
       width: 320,
@@ -41,32 +46,10 @@
             {
               cols: [
                 {
-                  view: "button", value: "Add", type: "form", click: function () {
-                    var result = $$("myform").validate();
-                    if (result) {
-                      webix.message('Film added', 'success');
-
-                      var data = $$("myform").getValues();
-                      var regex = /(<([^>]+)>)/ig;
-
-                      for (var prop in data) {
-                        prop.replace(regex, "")
-                      };
-
-                      $$("filmsList").add(data);
-                      $$("myform").clear();
-                    }
-                  }
+                  view: "button", value: "Save", type: "form", click: save_form 
                 },
-                { view: "button", value: "Update", click: update_row},
                 {
-                  view: "button", value: "Clear", click: function () {
-                    var confirm = webix.confirm("Are you shure?");
-                    if (confirm) {
-                      $$("myform").clearValidation();
-                      $$("myform").clear();
-                    }
-                  }
+                  view: "button", value: "Clear", click: clear_form
                 }
               ]
             }
@@ -74,7 +57,7 @@
           rules: {
             title: webix.rules.isNotEmpty,
             year: function (value) {
-              return (value >= 1970 && value <= 2019);
+              return (value >= 1920 && value <= 2020);
             },
             rating: function (value) {
               return value > 0;
@@ -88,12 +71,31 @@
       ]
     }
 
+    var tabLine = {
+        view: "tabbar",
+        id: "tabLine",
+        value: "all",
+        optionWidth: 100,
+        options: [
+          { "id": "all", "value": "All" },
+          { "id": "old", "value": "Old" },
+          { "id": "modern", "value": "Modern" },
+          { "id": "new", "value": "New" }
+        ],
+        on: {
+          onChange: function () {
+            $$("filmsList").filterByAll();
+          }
+        }
+      }
+    
     var filmsTable = {
       view: "datatable",
       id: "filmsList",
       url: "data/data.js",
       select: true,
       hover: "bg_gray",
+      editable: true,
       columns: [
         {
           id: "rank",
@@ -106,12 +108,14 @@
           id: "title",
           sort: "text",
           header: ["Film title", { content: "textFilter" }],
+          editor:"text",
           fillspace: true
         },
         {
-          id: "year",
-          sort: "int",
-          header: ["Year", { content: "textFilter" }]
+          id: "categoryId",
+          header: ["Category", { content: "selectFilter" }],
+          editor: "select",
+          options: "data/categories.js"
         },
         {
           id: "rating",
@@ -124,6 +128,10 @@
           header: ["Votes", { content: "textFilter" }],
           css: "d_flex",
           template: "<span>#votes#</span>  <span class='removeBtn'>{common.trashIcon()}</span>",
+        },
+        {
+          id: "year",
+          header: "Year"
         }
       ],
       onClick: {
@@ -131,8 +139,12 @@
           this.remove(id);
           return false;
         }
+      },
+      scheme: {
+        $init: function (obj) {
+          obj.categoryId = Math.floor(Math.random() * (5 - 1)) + 1;
+        }
       }
-
     };
 
     var usersTable = {
@@ -169,30 +181,49 @@
               click: function(){
                 $$('usersList').sort("#name#","desc");
               }
+            },
+            {
+              view: "button",
+              id: "userAdd",
+              value: "Add new",
+              type: "form",
+              width: 100,
+              click: function(){
+                var list = $$('usersList');
+                $$('usersList').add({
+                  id: Date.now(),
+                  name: list.getItem(Math.floor(Math.random() * (13 - 1)) + 1).name,
+                  age: Math.floor(Math.random() * (60 - 20)) + 20,
+                  country: list.getItem(Math.floor(Math.random() * (13 - 1)) + 1).country
+                }
+                );
+              }
             }
           ]
-
         },
         {
-          view: "list",
+          view: "editlist",
           id: "usersList",
           css: "d_flex",
           select: true,
           template: "#name# <span class='removeBtn'><i class='fas fa-times'></i></span>",
           url: "data/users.js",
+          editable: true,
+          editor: "text",
+          editValue: "name",
           onClick: {
             removeBtn: function (e, id) {
               this.remove(id);
               return false;
             }
           },
-          on: {
-            "onAfterLoad": function(){
-              console.log($$("usersList").data)
-              for(var i=0; i<6; i++) {
-                this.addCss(i, "bg_gray")
-              }
+          scheme: {
+            $init: function (obj) {
+              if(obj.age < 26) obj.$css = "bg_yellow" 
             }
+          },
+          rules:{
+            "name":webix.rules.isNotEmpty
           }
         }
       ]
@@ -201,10 +232,10 @@
     var usersChart = {
       view:"chart",
       type:"bar",
-      value: "#age#",
-      url: "data/users.js",
+      id: "userChart",
+      // value: "#age#",
       xAxis: {
-        template: "#age#"
+        template: "#country#"
       }
     }
 
@@ -212,6 +243,7 @@
       view: "treetable",
       url: "data/products.js",
       select: "row",
+      editable:true,
       columns: [
         {
           id: "id",
@@ -221,12 +253,14 @@
         {
           id: "title",
           header: "Title",
+          editor:"text",
           template: "{common.treetable()} #title#",
           fillspace: 2
         },
         {
           id: "price",
           header: "Price",
+          editor:"text",
           fillspace: 1
         }
       ],
@@ -234,13 +268,28 @@
         onAfterLoad: function() {
           this.openAll()
         }
+      },
+      rules: {
+        title: webix.rules.isNotEmpty,
+        price: function (value) {
+          return (value >= 0 && value <= 30);
+        }
       }
     }
     
     var main = {
       animate: false,
       cells: [
-        { id: "Dashboard", cols: [filmsTable, form] },
+        {
+          id: "Dashboard", cols: [
+            {
+              rows: [
+                tabLine, filmsTable
+              ]
+            },
+            form
+          ]
+        },
         { id: "Users", rows: [usersTable, usersChart] },
         { id: "Products", rows: [products] },
         { id: "Locations", template: "Locations view" }
@@ -346,50 +395,58 @@
       ]
     });
 
-    $$("filmsList").attachEvent("onAfterSelect", function (id) {
-      $$("myform").setValues({
-        title: $$("filmsList").getItem(id).title,
-        year: $$("filmsList").getItem(id).year,
-        rating: $$("filmsList").getItem(id).rating,
-        votes: $$("filmsList").getItem(id).votes
-      });
-    });
+    $$("myform").bind($$("filmsList"));
 
-    function update_row() {
-      var sel = $$("filmsList").getSelectedId();
-      if (!sel) return;
-
-      var value1 = $$('myform').getValues().title;
-      var value2 = $$('myform').getValues().year;
-      var value3 = $$('myform').getValues().rating;
-      var value4 = $$('myform').getValues().votes;
-
-
-      var item = $$("filmsList").getItem(sel);
-      item.title = value1;
-      item.year = value2;
-      item.rating = value3;
-      item.votes = value4;
-
-      var result = $$("myform").validate();
-      if (result) {
-        webix.message('Infomation updated', 'success');
-
-        var data = $$("myform").getValues();
-        var regex = /(<([^>]+)>)/ig;
-
-        for (var prop in data) {
-          prop.replace(regex, "")
-        };
-
-        $$("filmsList").updateItem(sel, item);
+    function save_form() {
+      var form = $$('myform');
+      if (form.isDirty()) {
+        if (!form.validate())
+          return false;
+        form.save();
+        webix.message('Saved', 'success');
         $$("myform").clear();
       }
+    };
 
+    function clear_form() {
+      var confirm = webix.confirm("Are you shure?");
+      if (confirm) {
+        $$("myform").clearValidation();
+        $$("myform").clear();
+      }
     }
 
-  </script>
+    $$("filmsList").registerFilter(
+        $$("tabLine"),
+        {
+          columnId: "year", compare: function (year, filter, item) {
+            if (filter == "all") return true;
+            if (filter == "old") return year <= 1960;
+            if (filter == "modern") return (year > 1960) && (year < 2005);
+            else return year >= 2005;
+          }
+        },
+        {
+          getValue: function (node) {
+            return node.getValue();
+          },
+          setValue: function (node, value) {
+            node.setValue(value);
+          }
+        }
+      );
 
-</body>
+    // $$("userChart").sync($$("usersList"), function () {
+    //     $$("userChart").group({
+    //       by: "country",
+    //       map: {
+    //         country: ['country', count ] 
+    //       }
+    //     });
+    //   });
 
-</html>
+    </script>
+  
+  </body>
+  
+  </html>

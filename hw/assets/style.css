@@ -7,8 +7,12 @@ body {
   text-align: center;
 }
 
-.bg_gray {
+.bg_grey {
   background-color: #f4f5f9;
+}
+
+.bg_yellow {
+  background-color: #fff610;
 }
 
 .webix_view {
@@ -41,7 +45,6 @@ body {
 
 .success.webix_el_button button .webix_icon_btn  {
   color: green;
-  /* font-size: 18px; */
 }
 
 .profile_win {
