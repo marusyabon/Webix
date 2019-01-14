@@ -53,11 +53,12 @@
                         prop.replace(regex, "")
                       };
 
-                      $$("filmsList").add(data)
+                      $$("filmsList").add(data);
+                      $$("myform").clear();
                     }
                   }
                 },
-                { view: "button", value: "Update", click: "update_row" },
+                { view: "button", value: "Update", click: update_row},
                 {
                   view: "button", value: "Clear", click: function () {
                     var confirm = webix.confirm("Are you shure?");
@@ -143,7 +144,7 @@
               name: "usersFilter",
               id: "usersFilter",
               on: {
-                'onKeyPress': function () {
+                'onTimedKeyPress': function () {
                   var val = this.getValue();
                   $$('usersList').filter("#name#", val);
                 }
@@ -186,7 +187,7 @@
             }
           },
           on: {
-            "onAfterRender": function(){
+            "onAfterLoad": function(){
               console.log($$("usersList").data)
               for(var i=0; i<6; i++) {
                 this.addCss(i, "bg_gray")
@@ -382,6 +383,7 @@
         };
 
         $$("filmsList").updateItem(sel, item);
+        $$("myform").clear();
       }
 
     }
