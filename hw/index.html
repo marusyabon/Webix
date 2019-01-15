@@ -233,10 +233,12 @@
       view:"chart",
       type:"bar",
       id: "userChart",
-      // value: "#age#",
+      value: "#age#",
+      label: "country",
       xAxis: {
         template: "#country#"
-      }
+      },
+      yAxis:{},
     }
 
     var products = {
@@ -436,14 +438,14 @@
         }
       );
 
-    // $$("userChart").sync($$("usersList"), function () {
-    //     $$("userChart").group({
-    //       by: "country",
-    //       map: {
-    //         country: ['country', count ] 
-    //       }
-    //     });
-    //   });
+    $$("userChart").sync($$("usersList"), function () {
+        this.group({
+          by: "country",
+          map: {
+            age: ["country", "count" ] 
+          }
+        });
+      });
 
     </script>
   
