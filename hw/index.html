@@ -22,9 +22,16 @@
   <script type="text/javascript" charset="utf-8">
 
     webix.protoUI({
-				name:"editlist"
-			}, webix.EditAbility, webix.ui.list);
+      name: "editlist"
+    }, webix.EditAbility, webix.ui.list);
 
+    var filmCategories = new webix.DataCollection({
+      url: "data/categories.js"
+    });
+
+    var usersCollection = new webix.DataCollection({
+      url: "data/users.js"
+    });
 
     var form = {
       type: "clean",
@@ -43,6 +50,7 @@
             { view: "text", label: "Year", name: "year", invalidMessage: "Should be between 1970 and 2019" },
             { view: "text", label: "Rating", name: "rating", invalidMessage: "Should be more then 0" },
             { view: "text", label: "Votes", name: "votes", invalidMessage: "Must be less than 100000" },
+            { view:"richselect", label: "Category", name: "category", options: filmCategories},
             {
               cols: [
                 {
@@ -92,9 +100,9 @@
     var filmsTable = {
       view: "datatable",
       id: "filmsList",
-      url: "data/data.js",
       select: true,
       hover: "bg_gray",
+      url: "data/data.js",
       editable: true,
       columns: [
         {
@@ -115,7 +123,7 @@
           id: "categoryId",
           header: ["Category", { content: "selectFilter" }],
           editor: "select",
-          options: "data/categories.js"
+          collection: filmCategories
         },
         {
           id: "rating",
@@ -190,8 +198,8 @@
               width: 100,
               click: function(){
                 var list = $$('usersList');
-                $$('usersList').add({
-                  id: Date.now(),
+                usersCollection.add({
+                  id: webix.uid(),
                   name: list.getItem(Math.floor(Math.random() * (13 - 1)) + 1).name,
                   age: Math.floor(Math.random() * (60 - 20)) + 20,
                   country: list.getItem(Math.floor(Math.random() * (13 - 1)) + 1).country
@@ -207,14 +215,12 @@
           css: "d_flex",
           select: true,
           template: "#name# <span class='removeBtn'><i class='fas fa-times'></i></span>",
-          url: "data/users.js",
           editable: true,
           editor: "text",
           editValue: "name",
           onClick: {
             removeBtn: function (e, id) {
-              this.remove(id);
-              return false;
+              usersCollection.remove(id);
             }
           },
           scheme: {
@@ -279,6 +285,44 @@
       }
     }
     
+    var categoriesTable = {
+        rows: [
+          {
+            view: "toolbar",
+            cols: [
+              {
+                view: "button", value: "Add", type: "form", click: function () {
+                  filmCategories.add({ value: "Type name "})
+                }
+              },
+              {
+                view: "button", value: "Remove", click: function () {
+                  var line = $$("categoriesTable").getSelectedId();
+                  filmCategories.remove(line);
+                }
+              },
+            ]
+          },
+          {
+            view: "datatable",
+            id: "categoriesTable",
+            select: true,
+            hover: "bg_gray",
+            editable: true,
+            editaction:"dblclick",
+            autoConfig: true,
+            columns: [
+              {
+                id: "value",
+                header: "Category",
+                fillspace: 1,
+                editor:"text"
+              },
+            ]
+          }
+        ]
+      }
+      
     var main = {
       animate: false,
       cells: [
@@ -294,7 +338,7 @@
         },
         { id: "Users", rows: [usersTable, usersChart] },
         { id: "Products", rows: [products] },
-        { id: "Locations", template: "Locations view" }
+        { id: "Admin", rows: [categoriesTable] }
       ]
     };
 
@@ -338,7 +382,7 @@
                       $$(id).show();
                     }
                   },
-                  data: ["Dashboard", "Users", "Products", "Locations"]
+                  data: ["Dashboard", "Users", "Products", "Admin"]
                 },
                 {},
                 {
@@ -438,7 +482,9 @@
         }
       );
 
-    $$("userChart").sync($$("usersList"), function () {
+    $$("usersList").sync(usersCollection);
+
+    $$("userChart").sync(usersCollection, function () {
         this.group({
           by: "country",
           map: {
@@ -446,6 +492,8 @@
           }
         });
       });
+
+    $$("categoriesTable").sync(filmCategories)
 
     </script>
   

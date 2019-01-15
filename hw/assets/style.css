@@ -47,7 +47,8 @@ body {
   color: green;
 }
 
-.profile_win {
+.profile_win,
+.webix_list {
   background-color: #fff;
 }
 
